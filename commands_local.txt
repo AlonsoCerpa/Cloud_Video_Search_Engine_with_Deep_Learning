@@ -1,0 +1,4 @@
+Instalar en nuestra máquina local:
+
+1. Autenticar nuestra máquina con el proyecto en GCP:
+export GOOGLE_APPLICATION_CREDENTIALS="/home/alonso/Documents/cursos_2020_2/cloud/tarea_final/service_account_key.json"

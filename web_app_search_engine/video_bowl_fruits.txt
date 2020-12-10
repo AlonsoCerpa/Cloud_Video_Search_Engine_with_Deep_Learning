@@ -1,0 +1,8 @@
+scissors
+dining table
+banana
+knife
+cup
+bowl
+orange
+apple

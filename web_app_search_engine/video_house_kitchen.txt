@@ -1,0 +1,8 @@
+sink
+spoon
+boat
+tv
+person
+cup
+bottle
+bowl

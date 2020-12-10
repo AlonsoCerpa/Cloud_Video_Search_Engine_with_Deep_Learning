@@ -1,0 +1,25 @@
+Instalar en la MV de Azure con el modelo entrenado de reconocimiento de objetos:
+
+Datos de la MV:
+Usuario: azureuser (por defecto)
+Nombre de clave: (por defecto)
+
+1. Configurar ambiente en conda con PyTorch, OpenCV y Detectron2:
+conda create -n detectron2 python=3.6
+conda activate detectron2
+conda install pytorch torchvision torchaudio cudatoolkit=10.1 -c pytorch
+pip install opencv-python
+python -m pip install detectron2 -f \
+  https://dl.fbaipublicfiles.com/detectron2/wheels/cu101/torch1.7/index.html
+
+2. Configurar GCP:
+pip install --upgrade google-api-python-client
+pip install google-cloud-storage
+nano service_account_key.json
+Copiar y pegar el contenido del archivo local 'service_account_key.json' en el archivo remoto 'service_account_key.json'
+export GOOGLE_APPLICATION_CREDENTIALS="/home/azureuser/service_account_key.json"
+
+3. Crear el archivo con el modelo de detección de objetos
+nano obj_det_model.py
+Copiar todo lo que se encuentra en el archivo local "obj_det_model.py" al archivo remoto "obj_det_model.py"
+python obj_det_model.py

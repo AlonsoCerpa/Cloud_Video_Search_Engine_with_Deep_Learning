@@ -1,0 +1,6 @@
+dog
+horse
+cat
+person
+zebra
+cow

@@ -1,0 +1,9 @@
+refrigerator
+chair
+sink
+oven
+vase
+potted plant
+cup
+bottle
+bowl
