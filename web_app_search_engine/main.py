@@ -6,6 +6,17 @@ import threading
 import time
 import os
 from google.cloud import storage
+from flask import render_template
+from flask_wtf import FlaskForm
+from wtforms import StringField, FileField, PasswordField, BooleanField, SubmitField
+from wtforms.validators import DataRequired
+from flask import render_template, flash, redirect, url_for
+import os
+
+app = Flask(__name__)
+SECRET_KEY = os.urandom(32)
+app.config['SECRET_KEY'] = SECRET_KEY
+index_search = {}
 
 def list_blob_names_with_prefix(bucket_name, prefix=None):
     storage_client = storage.Client()
@@ -24,8 +35,12 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
     blob = bucket.blob(source_blob_name)
     blob.download_to_filename(destination_file_name)
 
-app = Flask(__name__)
-index_search = {}
+def upload_blob(bucket_name, source_file_name, destination_blob_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(source_file_name)
 
 def update_index():
     global index_search
@@ -49,19 +64,36 @@ def update_index():
         list_videos_processed = list_videos_cloud
         time.sleep(3)
 
-@app.route('/')
+
+class UploadVideoForm(FlaskForm):
+    video_file_path = StringField('Path al video:', validators=[DataRequired()])
+    submit = SubmitField('Subir a la nube')
+
+class SearchForm(FlaskForm):
+    search_term = StringField('Etiqueta del video:', validators=[DataRequired()])
+    submit = SubmitField('Buscar')
+
+@app.route('/', methods=['GET', 'POST'])
 def root():
     global index_search
-    response = index_search.get(request.args['search'])
-    if response == None:
-        response = []
-    data = {
-        'response' : response
-    }
-    #print(data)
-    js = json.dumps(data)
-    resp = Response(js, status=200, mimetype='application/json')
-    return resp
+    form1 = UploadVideoForm()
+    form2 = SearchForm()
+    if form1.validate_on_submit():
+        video_file_path = form1.video_file_path.data
+        bucket_name = "datos-tarea-final-videos"
+        source_file_name = video_file_path
+        destination_blob_name = os.path.basename(video_file_path)
+        print("Subiendo video")
+        upload_blob(bucket_name, source_file_name, destination_blob_name)
+        print("Terminó de subir")
+        msg = "Se subió el video"
+        return render_template('index.html', form1=form1, form2=form2, msg=msg)
+    elif form2.validate_on_submit():
+        print(form2.search_term.data)
+        result_search = index_search.get(form2.search_term.data, [])
+        return render_template('index.html', form1=form1, form2=form2, result_search=result_search)
+    else:
+        return render_template('index.html', form1=form1, form2=form2)
 
 if __name__ == '__main__':
     thread1 = threading.Thread(target=update_index, daemon=True)

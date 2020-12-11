@@ -1,0 +1,39 @@
+<!doctype html>
+<title>Motor de búsqueda de Videos con DL</title>
+
+{% block content %}
+    <h1>Motor de búsqueda de Videos con Deep Learning</h1>
+
+    <form action="" method="post" novalidate>
+        {{ form1.hidden_tag() }}
+        <p>
+            {{ form1.video_file_path.label }}<br>
+            {{ form1.video_file_path(size=64) }}
+        </p>
+        <p>{{ form1.submit() }}</p>
+    </form>
+
+    {% if msg %}
+        {{ msg }}
+    {% endif %}
+
+    <form action="" method="post" novalidate>
+        {{ form2.hidden_tag() }}
+        <p>
+            {{ form2.search_term.label }}<br>
+            {{ form2.search_term(size=32) }}
+        </p>
+        <p>{{ form2.submit() }}</p>
+    </form>
+{% endblock %}
+
+{% for result in result_search %}
+    <h1>{{ result }}</h1>
+    {% set url_video = 'https://storage.cloud.google.com/datos-tarea-final-videos/' ~ result ~ '.mp4' %}
+    <video width="320" height="180" controls>
+        <source src="{{ url_video }}" type="video/mp4">
+    </video>
+    <br>
+    <br>
+    <br>
+{% endfor %}
